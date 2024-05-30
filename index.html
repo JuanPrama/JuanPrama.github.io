@@ -12,7 +12,7 @@
 
 <meta name="date" content="2024-05-15" />
 
-<title>Juan Prada</title>
+<title>Análisis de Datos de viviendas</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,37 +349,972 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Juan Prada</h1>
+<h1 class="title toc-ignore">Análisis de Datos de viviendas</h1>
 <h4 class="date">2024-05-15</h4>
 
 </div>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting
-syntax for authoring HTML, PDF, and MS Word documents. For more details
-on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be
-generated that includes both content as well as the output of any
-embedded R code chunks within the document. You can embed an R code
-chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<div id="introduccion-p-set4" class="section level2">
+<h2>Introduccion P-set4</h2>
+<p>Aquí se presentará un breve análisis de los precios de vivienda
+utilizando los datos proporcionados de la página “<a href="https://eduard-martinez.github.io/pset-4.html" class="uri">https://eduard-martinez.github.io/pset-4.html</a>”. Este
+analisis sera realizado por Juan David Prada Amaya con codigo 202112612
+y David Eduardo Bonilla con codigo 202015465.</p>
+<pre><code>## Warning: package &#39;sf&#39; was built under R version 4.3.3</code></pre>
+<pre><code>## Linking to GEOS 3.11.2, GDAL 3.8.2, PROJ 9.3.1; sf_use_s2() is TRUE</code></pre>
+<pre><code>## Loading required package: pacman</code></pre>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAABlBMVEUAAAD///+l2Z/dAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAbfklEQVR4nO3d63aiWBSFUfP+L91jdOWiXBSWR87ZMOeftkyA3US/0oDU7QuAyK33AABVCShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQgIKEBJQgJCAAoQEFCAkoAAhAQUICShASEABQmMH9AbQTPtENV9jQ733NnAuzRvVeoXT9b8z+gf+wgAuq1pA38y/gALt1Aro2y+gBRRop1RAp8XcX1ABBdqpFtCX97xaQ7tpgKurFNCF15t7X4IKKNBOsYBuuu/pKppNA1yegAKEBBQgJKAAoWIBdRAJGEelgDqNCRhKtYA6kR4YRqmA+ignMJJaAZ0XdPfyHxkLOI09cSkW0C+XswM+aVdg6gX0LQIKPPMbzk0FFVCAH3fZPGdAvYUHPuU+ERtyUS2gDiIBn3PqgDqNCfikMwfUifTAR508oC/vebWGdtMAp3PigLqYCPBZ5w7opvuerqLZNMD5nPg0pt0BXTjm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" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the
-code chunk to prevent printing of the R code that generated the
-plot.</p>
+<div id="extraemos-la-informacion-de-la-pagina-web" class="section level2">
+<h2>Extraemos la informacion de la pagina web</h2>
+<ul>
+<li>La variable url nos guarda la dirrecion de la pagina en donde se
+encuentran los datos.</li>
+<li>La variable html nos lee el objeto que acabamos de guardar en la
+anterior variable.</li>
+</ul>
+<pre class="r"><code>url = &quot;https://eduard-martinez.github.io/pset-4.html&quot;
+html &lt;- read_html(url)</code></pre>
+<p>La pagina posee varios URLs por lo cual debemos de leer cada uno y
+guardarlo - La variable html nos lee el objeto que acabamos de guardar
+en la anterior variable.</p>
+<pre class="r"><code>url_full &lt;- html %&gt;% html_elements(&quot;a&quot;)</code></pre>
+<p>Filtramos los URLs los cuales posean la palabra “propiedad” y
+guardamos los resultados en url_subset</p>
+<pre class="r"><code>url_subset &lt;- url_full %&gt;% html_attr(&quot;href&quot;) %&gt;% str_subset(&quot;propiedad&quot;)</code></pre>
+<p>Extraemos los datos coordenadas y precio del HTML de cada URL</p>
+<pre class="r"><code>lista_tablas &lt;- list()
+for (i in seq_along(url_subset)) {
+  tablas &lt;- read_html(url_subset[i]) %&gt;% html_table() %&gt;% as.data.frame()
+  indice &lt;- c(8, 10, 11)
+  
+  # Extraer las columnas seleccionadas y mantener nombres de columnas
+  info &lt;- tablas[, indice, drop = FALSE]
+  
+  # Asegurar que las filas tienen nombres (puede ajustarse según necesidad)
+  rownames(info) &lt;- paste(&quot;Row&quot;, 1:nrow(info), sep = &quot;_&quot;)
+  
+  # Agregar el dataframe a la lista
+  lista_tablas[[i]] &lt;- info
+}
+print(lista_tablas)</code></pre>
+<pre><code>## [[1]]
+##         price      lat       lon
+## Row_1 6.4e+08 4.717989 -74.07909
+## 
+## [[2]]
+##          price  lat     lon
+## Row_1 1.75e+08 4.76 -74.034
+## 
+## [[3]]
+##          price   lat    lon
+## Row_1 3.99e+08 4.588 -74.11
+## 
+## [[4]]
+##         price      lat       lon
+## Row_1 3.6e+09 4.666264 -74.08338
+## 
+## [[5]]
+##       price   lat     lon
+## Row_1 5e+08 4.733 -74.089
+## 
+## [[6]]
+##         price      lat       lon
+## Row_1 2.6e+08 4.768361 -74.04681
+## 
+## [[7]]
+##         price   lat     lon
+## Row_1 2.8e+09 4.685 -74.027
+## 
+## [[8]]
+##          price      lat       lon
+## Row_1 8.75e+08 4.697425 -74.03502
+## 
+## [[9]]
+##         price      lat       lon
+## Row_1 2.3e+09 4.716734 -74.03451
+## 
+## [[10]]
+##          price      lat       lon
+## Row_1 4.35e+08 4.658833 -74.11119
+## 
+## [[11]]
+##         price      lat       lon
+## Row_1 6.8e+08 4.700977 -74.03351
+## 
+## [[12]]
+##          price      lat       lon
+## Row_1 1.23e+09 4.717339 -74.08106
+## 
+## [[13]]
+##         price     lat       lon
+## Row_1 6.4e+08 4.69331 -74.04647
+## 
+## [[14]]
+##         price     lat       lon
+## Row_1 4.2e+08 4.63738 -74.06122
+## 
+## [[15]]
+##         price   lat     lon
+## Row_1 2.4e+08 4.666 -74.137
+## 
+## [[16]]
+##         price   lat     lon
+## Row_1 1.7e+08 4.729 -74.088
+## 
+## [[17]]
+##           price   lat     lon
+## Row_1 149900000 4.609 -74.206
+## 
+## [[18]]
+##         price      lat       lon
+## Row_1 4.5e+08 4.703032 -74.03029
+## 
+## [[19]]
+##         price      lat       lon
+## Row_1 8.3e+08 4.649675 -74.05361
+## 
+## [[20]]
+##         price   lat     lon
+## Row_1 5.5e+08 4.758 -74.057
+## 
+## [[21]]
+##         price      lat       lon
+## Row_1 3.3e+08 4.728067 -74.04262
+## 
+## [[22]]
+##          price  lat     lon
+## Row_1 8.85e+08 4.74 -74.054
+## 
+## [[23]]
+##           price  lat     lon
+## Row_1 399900000 4.68 -74.145
+## 
+## [[24]]
+##          price      lat      lon
+## Row_1 8.99e+08 4.657015 -74.0478
+## 
+## [[25]]
+##          price      lat       lon
+## Row_1 2.95e+08 4.728584 -74.03867
+## 
+## [[26]]
+##         price      lat       lon
+## Row_1 4.3e+08 4.620229 -74.07459
+## 
+## [[27]]
+##           price     lat       lon
+## Row_1 860444000 4.70291 -74.02817
+## 
+## [[28]]
+##         price   lat     lon
+## Row_1 3.5e+08 4.702 -74.039
+## 
+## [[29]]
+##          price      lat       lon
+## Row_1 2.39e+08 4.751881 -74.08532
+## 
+## [[30]]
+##         price      lat       lon
+## Row_1 4.8e+08 4.706417 -74.07605
+## 
+## [[31]]
+##         price      lat       lon
+## Row_1 7.2e+08 4.694465 -74.03598
+## 
+## [[32]]
+##          price      lat       lon
+## Row_1 5.68e+08 4.642599 -74.05942
+## 
+## [[33]]
+##         price   lat     lon
+## Row_1 3.1e+08 4.727 -74.048
+## 
+## [[34]]
+##           price   lat     lon
+## Row_1 129900000 4.716 -74.094
+## 
+## [[35]]
+##          price     lat       lon
+## Row_1 4.75e+08 4.68312 -74.05322
+## 
+## [[36]]
+##         price      lat       lon
+## Row_1 5.7e+08 4.706678 -74.03082
+## 
+## [[37]]
+##          price      lat       lon
+## Row_1 1.87e+08 4.559199 -74.09147
+## 
+## [[38]]
+##          price      lat       lon
+## Row_1 1.95e+08 4.668717 -74.05574
+## 
+## [[39]]
+##          price      lat       lon
+## Row_1 1.15e+09 4.692504 -74.04346
+## 
+## [[40]]
+##         price  lat     lon
+## Row_1 3.7e+08 4.72 -74.048
+## 
+## [[41]]
+##          price      lat       lon
+## Row_1 1.29e+09 4.716067 -74.03924
+## 
+## [[42]]
+##         price   lat     lon
+## Row_1 1.9e+08 4.722 -74.103
+## 
+## [[43]]
+##         price      lat       lon
+## Row_1 1.6e+09 4.715797 -74.07145
+## 
+## [[44]]
+##         price     lat       lon
+## Row_1 3.6e+08 4.75481 -74.04098
+## 
+## [[45]]
+##         price   lat     lon
+## Row_1 1.9e+08 4.722 -74.125
+## 
+## [[46]]
+##         price   lat    lon
+## Row_1 3.5e+08 4.725 -74.04
+## 
+## [[47]]
+##         price      lat     lon
+## Row_1 5.6e+08 4.685789 -74.043
+## 
+## [[48]]
+##         price   lat    lon
+## Row_1 8.2e+08 4.629 -74.08
+## 
+## [[49]]
+##         price   lat     lon
+## Row_1 7.5e+08 4.741 -74.057
+## 
+## [[50]]
+##       price      lat       lon
+## Row_1 9e+08 4.677334 -74.05319
+## 
+## [[51]]
+##         price      lat      lon
+## Row_1 1.1e+09 4.712455 -74.1272
+## 
+## [[52]]
+##         price   lat     lon
+## Row_1 1.8e+08 4.642 -74.156
+## 
+## [[53]]
+##           price      lat       lon
+## Row_1 7.374e+09 4.768858 -74.03651
+## 
+## [[54]]
+##          price      lat       lon
+## Row_1 4.45e+08 4.730518 -74.03678
+## 
+## [[55]]
+##         price      lat       lon
+## Row_1 3.2e+08 4.669539 -74.11739
+## 
+## [[56]]
+##         price   lat     lon
+## Row_1 1.1e+09 4.734 -74.074
+## 
+## [[57]]
+##         price      lat       lon
+## Row_1 1.2e+08 4.619873 -74.06884
+## 
+## [[58]]
+##         price      lat       lon
+## Row_1 1.9e+07 4.648282 -74.12786
+## 
+## [[59]]
+##         price      lat       lon
+## Row_1 3.6e+09 4.742247 -74.03828
+## 
+## [[60]]
+##       price   lat     lon
+## Row_1 4e+08 4.663 -74.052
+## 
+## [[61]]
+##         price      lat       lon
+## Row_1 4.3e+08 4.744401 -74.12674
+## 
+## [[62]]
+##         price      lat       lon
+## Row_1 4.9e+08 4.741011 -74.05643
+## 
+## [[63]]
+##          price      lat       lon
+## Row_1 1.55e+08 4.717615 -74.13054
+## 
+## [[64]]
+##         price   lat     lon
+## Row_1 4.2e+08 4.549 -74.138
+## 
+## [[65]]
+##          price   lat     lon
+## Row_1 3.45e+08 4.733 -74.075
+## 
+## [[66]]
+##          price      lat       lon
+## Row_1 3.95e+08 4.702073 -74.04366
+## 
+## [[67]]
+##          price   lat     lon
+## Row_1 2.25e+08 4.654 -74.151
+## 
+## [[68]]
+##           price      lat       lon
+## Row_1 304467638 4.645771 -74.06514
+## 
+## [[69]]
+##         price      lat       lon
+## Row_1 3.8e+08 4.681995 -74.04985
+## 
+## [[70]]
+##         price      lat       lon
+## Row_1 1.2e+09 4.689362 -74.04741
+## 
+## [[71]]
+##         price   lat     lon
+## Row_1 2.3e+09 4.679 -74.053
+## 
+## [[72]]
+##         price      lat       lon
+## Row_1 8.5e+08 4.700044 -74.05118
+## 
+## [[73]]
+##         price   lat     lon
+## Row_1 2.9e+08 4.633 -74.095
+## 
+## [[74]]
+##       price      lat       lon
+## Row_1 1e+09 4.741847 -74.03983
+## 
+## [[75]]
+##         price   lat     lon
+## Row_1 3.6e+08 4.648 -74.067
+## 
+## [[76]]
+##         price      lat       lon
+## Row_1 8.5e+08 4.695683 -74.05217
+## 
+## [[77]]
+##         price      lat       lon
+## Row_1 5.5e+08 4.704917 -74.03937
+## 
+## [[78]]
+##         price      lat       lon
+## Row_1 1.9e+09 4.691498 -74.09188
+## 
+## [[79]]
+##          price   lat    lon
+## Row_1 2.45e+08 4.759 -74.04
+## 
+## [[80]]
+##          price   lat     lon
+## Row_1 3.98e+08 4.726 -74.057
+## 
+## [[81]]
+##         price   lat     lon
+## Row_1 3.9e+08 4.662 -74.059
+## 
+## [[82]]
+##          price      lat       lon
+## Row_1 3.85e+08 4.670333 -74.10182
+## 
+## [[83]]
+##          price   lat     lon
+## Row_1 6.95e+08 4.678 -74.045
+## 
+## [[84]]
+##       price lat     lon
+## Row_1 6e+08 4.7 -74.092
+## 
+## [[85]]
+##         price      lat       lon
+## Row_1 2.4e+08 4.713768 -74.12132
+## 
+## [[86]]
+##          price      lat       lon
+## Row_1 4.65e+08 4.645572 -74.06521
+## 
+## [[87]]
+##            price      lat       lon
+## Row_1 3372500000 4.698641 -74.03056
+## 
+## [[88]]
+##         price      lat      lon
+## Row_1 5.2e+08 4.738622 -74.0601
+## 
+## [[89]]
+##       price   lat     lon
+## Row_1 1e+09 4.727 -74.064
+## 
+## [[90]]
+##       price   lat     lon
+## Row_1 8e+08 4.649 -74.117
+## 
+## [[91]]
+##            price      lat       lon
+## Row_1 1779350000 4.667961 -74.11474
+## 
+## [[92]]
+##         price      lat       lon
+## Row_1 6.3e+08 4.648849 -74.08487
+## 
+## [[93]]
+##         price      lat       lon
+## Row_1 4.5e+08 4.676605 -74.04543
+## 
+## [[94]]
+##         price      lat       lon
+## Row_1 3.5e+08 4.622398 -74.19813
+## 
+## [[95]]
+##          price   lat     lon
+## Row_1 84900000 4.642 -74.166
+## 
+## [[96]]
+##         price   lat     lon
+## Row_1 7.5e+08 4.685 -74.051
+## 
+## [[97]]
+##          price      lat       lon
+## Row_1 2.55e+08 4.722862 -74.03914
+## 
+## [[98]]
+##          price      lat       lon
+## Row_1 3.55e+08 4.721076 -74.03573
+## 
+## [[99]]
+##         price lat    lon
+## Row_1 5.7e+08 4.7 -74.03
+## 
+## [[100]]
+##       price      lat       lon
+## Row_1 9e+08 4.671202 -74.06597
+## 
+## [[101]]
+##          price      lat       lon
+## Row_1 1.56e+10 4.728144 -74.02463
+## 
+## [[102]]
+##          price      lat       lon
+## Row_1 1.25e+09 4.639865 -74.09141
+## 
+## [[103]]
+##         price      lat       lon
+## Row_1 9.3e+08 4.708213 -74.08175
+## 
+## [[104]]
+##         price      lat       lon
+## Row_1 1.3e+09 4.724156 -74.04649
+## 
+## [[105]]
+##         price   lat    lon
+## Row_1 2.8e+08 4.582 -74.11
+## 
+## [[106]]
+##          price      lat       lon
+## Row_1 1.75e+09 4.693447 -74.09904
+## 
+## [[107]]
+##       price      lat       lon
+## Row_1 4e+08 4.671426 -74.10999
+## 
+## [[108]]
+##         price      lat       lon
+## Row_1 1.4e+09 4.658586 -74.04878
+## 
+## [[109]]
+##          price      lat       lon
+## Row_1 1.89e+09 4.662872 -74.04695
+## 
+## [[110]]
+##          price   lat     lon
+## Row_1 1.19e+08 4.663 -74.147
+## 
+## [[111]]
+##         price   lat     lon
+## Row_1 4.2e+08 4.515 -74.117
+## 
+## [[112]]
+##          price      lat       lon
+## Row_1 1.35e+08 4.627094 -74.17567
+## 
+## [[113]]
+##       price   lat     lon
+## Row_1 8e+07 4.467 -74.126
+## 
+## [[114]]
+##          price      lat       lon
+## Row_1 3.99e+08 4.704094 -74.07169
+## 
+## [[115]]
+##         price   lat     lon
+## Row_1 2.5e+08 4.604 -74.098
+## 
+## [[116]]
+##       price   lat     lon
+## Row_1 6e+08 4.633 -74.154
+## 
+## [[117]]
+##            price   lat     lon
+## Row_1 6492255250 4.686 -74.047
+## 
+## [[118]]
+##          price      lat       lon
+## Row_1 5.29e+08 4.722641 -74.04811
+## 
+## [[119]]
+##         price   lat     lon
+## Row_1 5.6e+08 4.703 -74.033
+## 
+## [[120]]
+##         price      lat       lon
+## Row_1 9.2e+08 4.652111 -74.09123
+## 
+## [[121]]
+##         price   lat     lon
+## Row_1 2.6e+09 4.694 -74.066
+## 
+## [[122]]
+##          price      lat       lon
+## Row_1 1.65e+08 4.678277 -74.07717
+## 
+## [[123]]
+##           price      lat       lon
+## Row_1 695365000 4.722924 -74.04939
+## 
+## [[124]]
+##         price      lat      lon
+## Row_1 4.5e+08 4.668011 -74.0677
+## 
+## [[125]]
+##          price   lat     lon
+## Row_1 3.72e+10 4.704 -74.054
+## 
+## [[126]]
+##         price     lat       lon
+## Row_1 5.7e+08 4.73971 -74.06506
+## 
+## [[127]]
+##         price      lat       lon
+## Row_1 2.4e+09 4.589723 -74.21875
+## 
+## [[128]]
+##       price   lat     lon
+## Row_1 2e+09 4.633 -74.075
+## 
+## [[129]]
+##          price   lat     lon
+## Row_1 4.95e+08 4.596 -74.142
+## 
+## [[130]]
+##         price      lat       lon
+## Row_1 2.8e+08 4.740502 -74.03561
+## 
+## [[131]]
+##           price   lat     lon
+## Row_1 169900000 4.565 -74.081
+## 
+## [[132]]
+##         price      lat      lon
+## Row_1 7.5e+09 4.670359 -74.1384
+## 
+## [[133]]
+##           price   lat     lon
+## Row_1 449900000 4.563 -74.099
+## 
+## [[134]]
+##           price      lat       lon
+## Row_1 2.205e+09 4.645837 -74.06306
+## 
+## [[135]]
+##         price     lat       lon
+## Row_1 2.2e+08 4.72887 -74.04882
+## 
+## [[136]]
+##         price   lat     lon
+## Row_1 3.6e+08 4.695 -74.065
+## 
+## [[137]]
+##          price      lat       lon
+## Row_1 3.15e+08 4.738216 -74.06152
+## 
+## [[138]]
+##          price      lat      lon
+## Row_1 5.17e+08 4.684924 -74.0444
+## 
+## [[139]]
+##         price   lat     lon
+## Row_1 5.3e+08 4.716 -74.043
+## 
+## [[140]]
+##          price      lat       lon
+## Row_1 3.98e+08 4.671103 -74.11105
+## 
+## [[141]]
+##         price   lat     lon
+## Row_1 8.5e+08 4.601 -74.081
+## 
+## [[142]]
+##         price      lat       lon
+## Row_1 4.4e+08 4.653101 -74.05071
+## 
+## [[143]]
+##         price      lat       lon
+## Row_1 3.3e+08 4.697873 -74.03747
+## 
+## [[144]]
+##          price      lat       lon
+## Row_1 1.65e+09 4.690899 -74.04441
+## 
+## [[145]]
+##          price      lat       lon
+## Row_1 1.39e+08 4.572445 -74.09415
+## 
+## [[146]]
+##          price  lat     lon
+## Row_1 1.25e+08 4.74 -74.084
+## 
+## [[147]]
+##          price      lat       lon
+## Row_1 5.68e+08 4.695102 -74.06155
+## 
+## [[148]]
+##           price   lat     lon
+## Row_1 298900000 4.612 -74.195
+## 
+## [[149]]
+##         price      lat      lon
+## Row_1 2.8e+08 4.728576 -74.0296
+## 
+## [[150]]
+##         price      lat       lon
+## Row_1 2.7e+08 4.718273 -74.03397
+## 
+## [[151]]
+##         price      lat       lon
+## Row_1 5.5e+08 4.665878 -74.06034
+## 
+## [[152]]
+##          price      lat       lon
+## Row_1 3.25e+08 4.742478 -74.06553
+## 
+## [[153]]
+##         price      lat       lon
+## Row_1 1.5e+09 4.614753 -74.13261
+## 
+## [[154]]
+##         price      lat       lon
+## Row_1 1.8e+08 4.724256 -74.13625
+## 
+## [[155]]
+##         price   lat     lon
+## Row_1 1.8e+08 4.591 -74.186
+## 
+## [[156]]
+##         price      lat       lon
+## Row_1 8.5e+08 4.653862 -74.11372
+## 
+## [[157]]
+##         price      lat       lon
+## Row_1 1.2e+09 4.718129 -74.07642
+## 
+## [[158]]
+##          price   lat     lon
+## Row_1 1.58e+09 4.661 -74.047
+## 
+## [[159]]
+##         price   lat     lon
+## Row_1 3.3e+08 4.646 -74.065
+## 
+## [[160]]
+##          price      lat       lon
+## Row_1 2.68e+08 4.643127 -74.13678
+## 
+## [[161]]
+##         price      lat       lon
+## Row_1 1.2e+09 4.819964 -74.06802
+## 
+## [[162]]
+##         price      lat      lon
+## Row_1 3.7e+08 4.721011 -74.0356
+## 
+## [[163]]
+##          price     lat       lon
+## Row_1 2.45e+08 4.73967 -74.04345
+## 
+## [[164]]
+##         price      lat       lon
+## Row_1 2.4e+08 4.641437 -74.12863
+## 
+## [[165]]
+##         price      lat       lon
+## Row_1 5.3e+08 4.766491 -74.04543
+## 
+## [[166]]
+##          price      lat       lon
+## Row_1 9.25e+08 4.715998 -74.03169
+## 
+## [[167]]
+##           price   lat     lon
+## Row_1 1.199e+09 4.657 -74.072
+## 
+## [[168]]
+##       price      lat       lon
+## Row_1 3e+08 4.618894 -74.06875
+## 
+## [[169]]
+##          price      lat       lon
+## Row_1 5.15e+08 4.717129 -74.04318
+## 
+## [[170]]
+##         price      lat       lon
+## Row_1 4.2e+08 4.632068 -74.06407
+## 
+## [[171]]
+##         price      lat       lon
+## Row_1 1.9e+08 4.756283 -74.02921
+## 
+## [[172]]
+##          price   lat     lon
+## Row_1 1.68e+08 4.604 -74.088
+## 
+## [[173]]
+##          price      lat       lon
+## Row_1 5.17e+08 4.675927 -74.05251
+## 
+## [[174]]
+##         price   lat     lon
+## Row_1 3.7e+08 4.658 -74.096
+## 
+## [[175]]
+##       price     lat       lon
+## Row_1 6e+08 4.72303 -74.07316
+## 
+## [[176]]
+##          price      lat       lon
+## Row_1 5.55e+08 4.723553 -74.06286
+## 
+## [[177]]
+##          price   lat     lon
+## Row_1 2.69e+08 4.704 -74.041
+## 
+## [[178]]
+##       price      lat       lon
+## Row_1 5e+08 4.720064 -74.07695
+## 
+## [[179]]
+##         price      lat       lon
+## Row_1 5.6e+08 4.672941 -74.05203
+## 
+## [[180]]
+##         price  lat     lon
+## Row_1 1.8e+09 4.69 -74.059
+## 
+## [[181]]
+##       price   lat     lon
+## Row_1 5e+07 4.581 -74.048
+## 
+## [[182]]
+##       price   lat     lon
+## Row_1 3e+08 4.667 -74.113
+## 
+## [[183]]
+##           price   lat     lon
+## Row_1 449990000 4.605 -74.137
+## 
+## [[184]]
+##          price   lat     lon
+## Row_1 2.75e+08 4.659 -74.132
+## 
+## [[185]]
+##          price     lat       lon
+## Row_1 3.47e+08 4.72313 -74.04609
+## 
+## [[186]]
+##         price     lat     lon
+## Row_1 3.5e+08 4.73423 -74.058
+## 
+## [[187]]
+##         price  lat     lon
+## Row_1 2.8e+08 4.71 -74.128
+## 
+## [[188]]
+##         price      lat       lon
+## Row_1 4.5e+08 4.728078 -74.03846
+## 
+## [[189]]
+##       price     lat       lon
+## Row_1 6e+08 4.59019 -74.08553
+## 
+## [[190]]
+##          price      lat       lon
+## Row_1 1.98e+08 4.727536 -74.10035
+## 
+## [[191]]
+##         price      lat       lon
+## Row_1 5.5e+07 4.726299 -74.12379
+## 
+## [[192]]
+##          price      lat       lon
+## Row_1 9.29e+08 4.718227 -74.07469
+## 
+## [[193]]
+##       price  lat     lon
+## Row_1 1e+09 4.68 -74.044
+## 
+## [[194]]
+##         price      lat       lon
+## Row_1 3.4e+08 4.731726 -74.06375
+## 
+## [[195]]
+##       price     lat       lon
+## Row_1 5e+08 4.61144 -74.07743
+## 
+## [[196]]
+##         price   lat     lon
+## Row_1 5.1e+08 4.716 -74.049
+## 
+## [[197]]
+##       price      lat      lon
+## Row_1 9e+10 4.683468 -74.0851
+## 
+## [[198]]
+##         price   lat     lon
+## Row_1 5.2e+08 4.643 -74.059
+## 
+## [[199]]
+##          price   lat    lon
+## Row_1 1.29e+09 4.658 -74.05
+## 
+## [[200]]
+##         price   lat     lon
+## Row_1 1.9e+08 4.716 -74.073
+## 
+## [[201]]
+##           price      lat       lon
+## Row_1 1.296e+09 4.702097 -74.04107
+## 
+## [[202]]
+##          price      lat     lon
+## Row_1 1.87e+08 4.613338 -74.069
+## 
+## [[203]]
+##         price      lat       lon
+## Row_1 5.6e+08 4.744756 -74.08439
+## 
+## [[204]]
+##          price  lat     lon
+## Row_1 1.05e+09 4.65 -74.049
+## 
+## [[205]]
+##         price      lat       lon
+## Row_1 4.5e+08 4.686231 -74.15432
+## 
+## [[206]]
+##       price   lat     lon
+## Row_1 8e+07 4.551 -74.089
+## 
+## [[207]]
+##         price      lat       lon
+## Row_1 7.5e+08 4.689706 -74.05418
+## 
+## [[208]]
+##         price   lat     lon
+## Row_1 8.2e+08 4.702 -74.044
+## 
+## [[209]]
+##         price   lat     lon
+## Row_1 3.4e+08 4.639 -74.061
+## 
+## [[210]]
+##         price      lat       lon
+## Row_1 8.5e+08 4.731361 -74.07079
+## 
+## [[211]]
+##         price      lat      lon
+## Row_1 6.3e+08 4.725806 -74.0358
+## 
+## [[212]]
+##         price      lat      lon
+## Row_1 1.1e+09 4.657808 -74.0608
+## 
+## [[213]]
+##         price   lat     lon
+## Row_1 1.9e+09 4.635 -74.062
+## 
+## [[214]]
+##         price      lat       lon
+## Row_1 2.4e+07 4.751762 -74.04806
+## 
+## [[215]]
+##       price      lat      lon
+## Row_1 9e+08 4.701365 -74.0333
+## 
+## [[216]]
+##         price     lat       lon
+## Row_1 2.5e+08 4.73871 -74.08656
+## 
+## [[217]]
+##          price   lat     lon
+## Row_1 1.35e+09 4.669 -74.052
+## 
+## [[218]]
+##          price      lat       lon
+## Row_1 1.29e+09 4.720871 -74.08413
+## 
+## [[219]]
+##         price      lat      lon
+## Row_1 3.1e+08 4.723192 -74.0311
+## 
+## [[220]]
+##         price   lat     lon
+## Row_1 4.2e+08 4.709 -74.066</code></pre>
+<p>Convertimos la informacion obtenida hasta el momento en un dataframe
+y lo guardamos en la variable db_house</p>
+<pre class="r"><code>db_house &lt;- rbindlist(lista_tablas)</code></pre>
+</div>
+<div id="resultados" class="section level2">
+<h2>Resultados</h2>
+<p>Se pinta un mapa para presentar resultados obtenidos</p>
+<pre class="r"><code>map &lt;- ggplot(data =sf_house)+geom_sf(aes(color= price))+
+  scale_color_viridis_c(option = &quot;viridis&quot;, name = &quot;Valor de la vivienda&quot;)+
+  labs(title = &quot;Mapa de valores vivienda&quot;)+ theme_minimal()
+
+print(map)</code></pre>
+<p><img src="data:image/png;base64,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" width="672" /></p>
+<p>Se guarda en un archivo PDF</p>
+<pre class="r"><code>ggsave(&quot;mapa_valores_vivienda.pdf&quot;, plot=map, device = &quot;pdf&quot;, width = 10, height = 7)</code></pre>
+<p>##Analisis</p>
+<p>Un poco de estadisticas descripticas acerca de los resultados
+obtenidos</p>
+<pre class="r"><code>estas &lt;- summary(db_house$price)
+estas</code></pre>
+<pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+## 1.900e+07 3.000e+08 4.775e+08 1.400e+09 8.885e+08 9.000e+10</code></pre>
+<ul>
+<li>Min.: El valor mínimo en el conjunto de datos es 19,000,000.</li>
+<li>1st Qu.: El primer cuartil, que es el valor que separa el 25%
+inferior del conjunto de datos, es 300,000,000.</li>
+<li>Median: La mediana, que es el valor que separa el 50% inferior del
+conjunto de datos del 50% superior, es 477,500,000.</li>
+<li>Mean: La media, que es el promedio de todos los valores del conjunto
+de datos, es 1,400,000,000. 3rd Qu.: El tercer cuartil, que es el valor
+que separa el 75% inferior del conjunto de datos, es 888,500,000.</li>
+<li>Max.: El valor máximo en el conjunto de datos es
+90,000,000,000.</li>
+</ul>
+<p>Mientras que por el lado del mapa generado podemos darnos cuenta que
+este solo presenta dos valores los cuales resaltan dentro de todos los
+datos mientras que el resto de datos no presenta valores demasiado
+elevados</p>
 </div>
 
 
