@@ -1,5 +1,5 @@
 ---
-title: "Juan Prada"
+title: "Análisis de Datos de viviendas"
 output: html_document
 date: "2024-05-15"
 ---
@@ -8,22 +8,105 @@ date: "2024-05-15"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Introduccion P-set4
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Aquí se presentará un breve análisis de los precios de vivienda utilizando los datos proporcionados de la página "https://eduard-martinez.github.io/pset-4.html". Este analisis sera realizado por Juan David Prada Amaya con codigo 202112612 y David Eduardo Bonilla con codigo 202015465.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r, echo=FALSE}
+# Cargamos los paquetes necesarios
+library(data.table)
+library(sf)
+require(pacman)
+library(ggplot2)
+library(viridisLite)
+p_load(tidyverse, rvest)
 ```
 
-## Including Plots
+## Extraemos la informacion de la pagina web
 
-You can also embed plots, for example:
+- La variable url nos guarda la dirrecion de la pagina en donde se encuentran los datos.
+- La variable html nos lee el objeto que acabamos de guardar en la anterior variable.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r , echo=TRUE}
+url = "https://eduard-martinez.github.io/pset-4.html"
+html <- read_html(url)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+La pagina posee varios URLs por lo cual debemos de leer cada uno y guardarlo
+- La variable html nos lee el objeto que acabamos de guardar en la anterior variable.
+
+```{r , echo=TRUE}
+url_full <- html %>% html_elements("a")
+```
+
+Filtramos los URLs los cuales posean la palabra "propiedad" y guardamos los resultados en url_subset 
+
+```{r, echo=TRUE}
+url_subset <- url_full %>% html_attr("href") %>% str_subset("propiedad")
+```
+
+Extraemos los datos coordenadas y precio del HTML de cada URL
+
+```{r , echo=TRUE}
+lista_tablas <- list()
+for (i in seq_along(url_subset)) {
+  tablas <- read_html(url_subset[i]) %>% html_table() %>% as.data.frame()
+  indice <- c(8, 10, 11)
+  
+  # Extraer las columnas seleccionadas y mantener nombres de columnas
+  info <- tablas[, indice, drop = FALSE]
+  
+  # Asegurar que las filas tienen nombres (puede ajustarse según necesidad)
+  rownames(info) <- paste("Row", 1:nrow(info), sep = "_")
+  
+  # Agregar el dataframe a la lista
+  lista_tablas[[i]] <- info
+}
+print(lista_tablas)
+```
+
+Convertimos la informacion obtenida hasta el momento en un dataframe y lo guardamos en la variable db_house
+
+```{r , echo=TRUE}
+db_house <- rbindlist(lista_tablas)
+```
+
+## Resultados 
+```{r , echo=FALSE}
+sf_house <- st_as_sf(db_house, coords = c("lon","lat"), crs= 4326)
+```
+
+Se pinta un mapa para presentar resultados obtenidos
+
+```{r , echo=TRUE}
+map <- ggplot(data =sf_house)+geom_sf(aes(color= price))+
+  scale_color_viridis_c(option = "viridis", name = "Valor de la vivienda")+
+  labs(title = "Mapa de valores vivienda")+ theme_minimal()
+
+print(map)
+
+```
+
+Se guarda en un archivo PDF 
+
+```{r , echo=TRUE}
+ggsave("mapa_valores_vivienda.pdf", plot=map, device = "pdf", width = 10, height = 7)
+```
+
+##Analisis
+
+Un poco de estadisticas descripticas acerca de los resultados obtenidos
+
+```{r , echo=TRUE}
+estas <- summary(db_house$price)
+estas
+```
+
+- Min.: El valor mínimo en el conjunto de datos es 19,000,000.
+- 1st Qu.: El primer cuartil, que es el valor que separa el 25% inferior del conjunto de datos, es 300,000,000.
+- Median: La mediana, que es el valor que separa el 50% inferior del conjunto de datos del 50% superior, es 477,500,000.
+- Mean: La media, que es el promedio de todos los valores del conjunto de datos, es 1,400,000,000.
+3rd Qu.: El tercer cuartil, que es el valor que separa el 75% inferior del conjunto de datos, es 888,500,000.
+- Max.: El valor máximo en el conjunto de datos es 90,000,000,000.
+
+Mientras que por el lado del mapa generado podemos darnos cuenta que este solo presenta dos valores los cuales resaltan dentro de todos los datos mientras que el resto de datos no presenta valores demasiado elevados
